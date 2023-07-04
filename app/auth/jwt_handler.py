@@ -1,6 +1,6 @@
 import time
 import jwt
-import decouple import config
+from decouple import config
 
 JWT_SECRET =config("secret")
 JWT_ALGORITHM = config("algorithm")
@@ -12,7 +12,7 @@ def token_response(token:str):
     }
 
 def signJWT(userID : str):
-    payload {
+    payload ={
         "userID" : userID,
         "expiry" : time.time() + 600    
     }
