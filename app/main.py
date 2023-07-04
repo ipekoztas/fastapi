@@ -10,22 +10,32 @@ from jose import JWTError, jwt
 from pydantic import BaseModel
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
+from typing import Dict
+from app.schemas import CreateUserSchema, UserSchema, UserLoginSchema
+
 app = FastAPI()
 users = []
 
+def create_user(session:Session, user:CreateUserSchema):
+    db_user = User(**user.dict())
+    session.add(db_user)
+    session.commit()
+    session.refresh(db_user)
+    return db_user
+
+def get_user(session:Session, email:str):
+    return session.query(User).filter(User.email == email).one()
 
 
 
-from typing import Dict
-from app.schemas import CreateUserSchema, UserSchema, UserLoginSchema
 @app.post('/signup', response_model=UserSchema)
 def signup(
     payload: CreateUserSchema = Body(), 
     session:Session=Depends(get_db)
 ):
     """Processes request to register user account."""
-    payload.hashed_password = user_model.User.hash_password(payload.hashed_password)
-    return user_db_services.create_user(session, user=payload)
+    payload.hashed_password = User.hash_password(payload.hashed_password)
+    return create_user(session, user=payload)
 
 
 @app.post('/login', response_model=Dict)
@@ -34,7 +44,7 @@ def login(
         session: Session = Depends(get_db)
     ):
     try:
-        user:user_model.User = user_db_services.get_user(
+        user = get_user(
             session=session, email=payload.email
         )
     except:
@@ -49,18 +59,10 @@ def login(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid user credentials"
         )
-
+    user.is_active = True
+    session.commit()
     return user.generate_token()
 
-def create_user(session:Session, user:CreateUserSchema):
-    db_user = User(**user.dict())
-    session.add(db_user)
-    session.commit()
-    session.refresh(db_user)
-    return db_user
-
-def get_user(session:Session, email:str):
-    return session.query(User).filter(User.email == email).one()
 
 @app.get("/")
 def read_root():

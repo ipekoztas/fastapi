@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 engine = create_engine('postgresql+psycopg2://postgres:mysecretpassword@localhost/postgres')
 
 
-SessionLocal = sessionmaker(autocommit=True, autoflush=True, bind=engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
 

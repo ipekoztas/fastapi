@@ -2,6 +2,9 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 from app.db_setup import Base, engine
 import bcrypt
+from jose import jwt
+from datetime import datetime, timedelta
+from decouple import config
 """
 #SQLAlchemy models
 class User(Base):
@@ -22,6 +25,8 @@ from sqlalchemy import (
     UniqueConstraint, 
     PrimaryKeyConstraint
 )
+SECRET_KEY = "bb9fad4508f673f74182398173b9d3b0"
+JWT_SECRET =config("secret")
 
 
 class User(Base):
@@ -57,11 +62,22 @@ class User(Base):
 
     def generate_token(self) -> dict:
         """Generate access token for user"""
+        expiration = datetime.utcnow() + timedelta(minutes=15)
+
+        payload = {
+            "full_name": self.full_name,
+            "email": self.email,
+            "exp": expiration
+        }
+        return {
+            "access_token": jwt.encode(payload, JWT_SECRET)
+        }
+        """
         return {
             "access_token": jwt.encode(
                 {"full_name": self.full_name, "email": self.email},
-                settings.SECRET_KEY
+                JWT_SECRET
             )
         }
-
+"""
 Base.metadata.create_all(engine)
