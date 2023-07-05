@@ -11,6 +11,9 @@ from pydantic import BaseModel
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
 from typing import Dict
+from app.auth.jwt_handler import decodeJWT
+from typing import Annotated
+
 from app.schemas import CreateUserSchema, UserSchema, UserLoginSchema
 
 app = FastAPI()
@@ -64,10 +67,30 @@ def login(
     return user.generate_token()
 
 
+
 @app.get("/")
-def read_root():
+def read_root(token:str):
     a = get_db()
     return {"Hello" :"World"}
+
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+        token_data = TokenData(username=username)
+    except JWTError:
+        raise credentials_exception
+    user = get_user(session=session, email=token_data.email)
+    if user is None:
+        raise credentials_exception
+    return user
 
 """
 def get_user(db: Session, user_id: int):

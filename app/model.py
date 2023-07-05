@@ -25,8 +25,9 @@ from sqlalchemy import (
     UniqueConstraint, 
     PrimaryKeyConstraint
 )
-SECRET_KEY = "bb9fad4508f673f74182398173b9d3b0"
 JWT_SECRET =config("secret")
+JWT_ALGORITHM = config("algorithm")
+
 
 
 class User(Base):
@@ -70,7 +71,7 @@ class User(Base):
             "exp": expiration
         }
         return {
-            "access_token": jwt.encode(payload, JWT_SECRET)
+            "access_token": jwt.encode(payload, JWT_SECRET,algorithm=JWT_ALGORITHM)
         }
         """
         return {
