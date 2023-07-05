@@ -20,3 +20,6 @@ class UserSchema(UserBaseSchema):
 class UserLoginSchema(BaseModel):
     email: EmailStr = Field(alias="username")
     password: str 
+
+class TokenData(BaseModel):
+    username: str 

@@ -71,7 +71,7 @@ class User(Base):
             "exp": expiration
         }
         return {
-            "access_token": jwt.encode(payload, JWT_SECRET,algorithm=JWT_ALGORITHM)
+            "access_token": jwt.encode(payload, JWT_SECRET)
         }
         """
         return {
