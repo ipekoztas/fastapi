@@ -9,11 +9,9 @@ from datetime import datetime, timedelta
 from typing import Dict
 from app.schemas import CreateUserSchema, UserSchema, UserLoginSchema, TokenData
 from sqlalchemy.orm import Session
-from app.exceptionHandler import ExceptionHandler
 
 app = FastAPI()
 users = []
-
 
 @app.post('/signup', response_model=UserSchema)
 def signup(
