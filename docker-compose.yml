@@ -1,5 +1,14 @@
 version: '3.8.10'
 services:
+  core_api:
+    build: .
+    container_name: "mycontainer"
+    ports:
+      - "8000:80"
+    volumes:
+      - ./app/:/app
+    depends_on:
+      - postgres
   postgres:
     image: "postgres"
     environment:
@@ -10,10 +19,4 @@ services:
       - "5432:5432"
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
-  core_api:
-    build: .
-    container_name: "mycontainer"
-    ports:
-      - "8000:80"
-    volumes:
-      - ./app/:/app
+  

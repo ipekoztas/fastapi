@@ -3,7 +3,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-engine = create_engine('postgresql+psycopg2://postgres:mysecretpassword@host.docker.internal:5432/postgres')
+#host.docker.internal
+engine = create_engine('postgresql+psycopg2://postgres:mysecretpassword@postgres:5432/postgres')
 
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
