@@ -1,0 +1,19 @@
+version: '3.8.10'
+services:
+  postgres:
+    image: "postgres"
+    environment:
+      POSTGRES_PASSWORD: "mysecretpassword"
+      POSTGRES_DB: "some-postgres"
+      POSTGRES_USER: "postgres"
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+  core_api:
+    build: .
+    container_name: "mycontainer"
+    ports:
+      - "8000:80"
+    volumes:
+      - ./app/:/app
