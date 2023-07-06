@@ -58,7 +58,17 @@ class UserService():
         }
     
     @staticmethod
-    def log_user(user: User, session: Session):
+    def log_user(payload: UserLoginSchema, session: Session):
+        try:
+            user = UserService.get_user(
+                session=session, email=payload.email
+            )
+        except:
+            ExceptionHandler.handle_exception()
+
+        is_validated:bool = UserService.validate_password(user, payload.password)
+        if not is_validated:
+            ExceptionHandler.handle_exception()
         user.is_active = True
         session.commit()
         return UserService.generate_token(user)
