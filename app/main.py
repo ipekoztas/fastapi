@@ -51,31 +51,6 @@ def login(
     return UserService.log_user(user=user, session=session)
 
 
-JWT_SECRET =config("secret")
-
-
 @app.get("/")
-async def get_current_user( authorization = Header(default=None),session: Session = Depends(get_db)):
-    print(authorization)
-    token = authorization.split(" ")[1]
-    print(token)
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, JWT_SECRET)
-        username: str = payload.get("full_name")
-        print(username)
-        email: str = payload.get("email")
-        print(email)
-        if username is None:
-            raise credentials_exception
-        #token_data = TokenData(username=username)
-    except JWTError:
-        raise credentials_exception
-    user = get_user(session=session, email=email)
-    if user is None:
-        raise credentials_exception
-    return {"Hello" :username}
+async def welcome_user( authorization = Header(default=None),session: Session = Depends(get_db)):
+    return UserService.welcome_user(authorization = authorization,session = session)
